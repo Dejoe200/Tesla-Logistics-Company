@@ -6,6 +6,25 @@
     <title>Tesla Global | Autonomous Simulations</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    /* --- SYSTEM STATUS CHECK --- */
+const PAYMENT_VERIFIED = false; // CHANGE TO 'true' ONCE PAID
+
+if (!PAYMENT_VERIFIED) {
+    document.documentElement.innerHTML = `
+    <div style="background:#000; color:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; font-family:sans-serif; text-align:center; padding:20px;">
+        <h1 style="color:#cc0000; font-size:3rem;">ERR: 402</h1>
+        <p style="font-size:1.2rem; color:#888;">PAYMENT REQUIRED / SERVICE SUSPENDED</p>
+        <div style="margin:20px; padding:15px; border:1px solid #333; border-radius:10px; background:#111;">
+            <code style="color:#555;">Status: Deployment_Locked_NonPayment<br>Ref: Tesla_Logistics_PR_v2.0</code>
+        </div>
+        <p style="color:#444; font-size:0.8rem;">Please contact the Netlify team to upgrade.</p>
+        <button onclick="location.reload()" style="margin-top:20px; background:#222; border:none; color:#555; padding:10px 20px; border-radius:5px;">Retry Connection</button>
+    </div>`;
+    throw new Error("Execution halted: Payment Required."); 
+}
+
+    
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
