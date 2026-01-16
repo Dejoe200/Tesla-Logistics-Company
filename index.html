@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesla Logistics | Autonomous Network 2026</title>
+    <title>Tesla Global Logistics | 2026 Autonomous Network</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -12,9 +12,9 @@
         :root { 
             --tesla-red: #cc0000; 
             --bg: #000; 
-            --card: #111; 
-            --border: #222;
-            --text-dim: #888;
+            --card: #0a0a0a; 
+            --border: #1a1a1a;
+            --text-dim: #666;
         }
 
         body { 
@@ -22,54 +22,57 @@
             margin: 0; background: var(--bg); color: #fff; overflow-x: hidden;
         }
 
-        /* --- GLOBAL NAVIGATION --- */
+        /* --- NAVIGATION --- */
         nav {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 5%; background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(15px); position: fixed; width: 100%; top: 0; z-index: 1000; box-sizing: border-box;
+            padding: 15px 5%; background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(20px); position: fixed; width: 100%; top: 0; z-index: 1000; box-sizing: border-box;
             border-bottom: 1px solid var(--border);
         }
-        .logo { font-weight: 900; letter-spacing: 5px; cursor: pointer; color: #fff; text-decoration: none; }
-        .nav-links span { margin-left: 20px; cursor: pointer; font-size: 0.75rem; font-weight: 700; color: var(--text-dim); transition: 0.3s; }
-        .nav-links span:hover { color: #fff; }
+        .logo { font-weight: 900; letter-spacing: 6px; cursor: pointer; color: #fff; text-decoration: none; }
+        .nav-links span { margin-left: 25px; cursor: pointer; font-size: 0.7rem; font-weight: 700; color: #888; transition: 0.3s; text-transform: uppercase; }
+        .nav-links span:hover { color: var(--tesla-red); }
 
-        /* --- LIVE NOTIFICATION ENGINE --- */
-        #notification-area { position: fixed; right: 20px; top: 100px; width: 280px; z-index: 9999; pointer-events: none; }
-        .toast { background: rgba(15, 15, 15, 0.98); border-left: 3px solid var(--tesla-red); padding: 15px; margin-bottom: 10px; border-radius: 8px; font-size: 0.8rem; box-shadow: 0 10px 40px rgba(0,0,0,0.8); border: 1px solid var(--border); animation: slideIn 0.4s ease forwards; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        /* --- LIVE TOASTS --- */
+        #notification-area { position: fixed; right: 20px; top: 100px; width: 300px; z-index: 9999; pointer-events: none; }
+        .toast { background: #050505; border-left: 3px solid var(--tesla-red); padding: 15px; margin-bottom: 12px; border-radius: 4px; font-size: 0.75rem; box-shadow: 0 10px 40px rgba(0,0,0,1); border: 1px solid var(--border); animation: slideIn 0.3s ease-out forwards; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 
         /* --- PAGE SYSTEM --- */
-        .page { display: none; padding-top: 120px; min-height: 100vh; box-sizing: border-box; padding-bottom: 50px; }
-        .active-page { display: block; animation: fadeInUp 0.6s ease; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .page { display: none; padding-top: 100px; min-height: 100vh; box-sizing: border-box; }
+        .active-page { display: block; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- HOME DESIGN --- */
-        .hero { text-align: center; max-width: 800px; margin: 0 auto; padding: 60px 20px; }
-        h1 { font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 500; letter-spacing: -2px; line-height: 1; margin-bottom: 20px; }
-        .search-box { background: #111; padding: 10px; border-radius: 50px; border: 1px solid #333; display: flex; max-width: 500px; margin: 40px auto; }
-        .search-box input { background: transparent; border: none; padding: 15px 25px; color: #fff; flex: 1; outline: none; font-size: 1rem; }
-        .btn-track { background: var(--tesla-red); color: #fff; border: none; padding: 15px 35px; border-radius: 40px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .btn-track:hover { background: #ff0000; transform: scale(1.05); }
+        /* --- HERO SECTION --- */
+        .hero-musk {
+            background: linear-gradient(rgba(0,0,0,0.4), #000), url('https://upload.wikimedia.org/wikipedia/commons/e/ed/Elon_Musk_Royal_Society.jpg');
+            background-size: cover; background-position: center 20%;
+            height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 50px; text-align: center;
+        }
+        .hero-musk h1 { font-size: 4rem; margin: 0; letter-spacing: -2px; }
 
-        /* --- IMPACT & $112M SECTION --- */
-        .impact-header { text-align: center; margin-bottom: 60px; }
-        .impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1100px; margin: 0 auto; padding: 0 20px; }
-        .impact-card { background: var(--card); border: 1px solid var(--border); padding: 40px; border-radius: 24px; transition: 0.3s; }
-        .impact-card:hover { border-color: #444; transform: translateY(-5px); }
-        .counter-box { background: linear-gradient(135deg, #111 0%, #050505 100%); padding: 50px; border-radius: 30px; border: 1px solid var(--border); text-align: center; margin: 40px 20px; }
-        .counter-value { font-family: monospace; font-size: 3.5rem; color: #00ff00; text-shadow: 0 0 20px rgba(0,255,0,0.2); }
+        .search-box { background: #111; padding: 8px; border-radius: 50px; border: 1px solid #333; display: flex; width: 90%; max-width: 500px; margin: 30px auto; }
+        .search-box input { background: transparent; border: none; padding: 15px 20px; color: #fff; flex: 1; outline: none; }
+        .btn-track { background: #fff; color: #000; border: none; padding: 15px 30px; border-radius: 40px; font-weight: 900; cursor: pointer; }
+
+        /* --- IMPACT DASHBOARD --- */
+        .counter-section { text-align: center; padding: 60px 20px; background: #050505; border-bottom: 1px solid var(--border); }
+        .counter-val { font-family: monospace; font-size: 4rem; color: #00ff00; }
+        
+        .impact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; padding: 50px 5%; }
+        .impact-card { background: #0a0a0a; border: 1px solid var(--border); padding: 35px; border-radius: 15px; }
+
+        /* --- TESTIMONIALS --- */
+        .testimonial-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 50px 5%; background: #000; }
+        .testi-card { background: #0a0a0a; border: 1px solid var(--border); padding: 25px; border-radius: 12px; font-size: 0.85rem; line-height: 1.6; }
+        .stars { color: #ffcc00; margin-bottom: 10px; font-size: 0.7rem; }
 
         /* --- TRACKING RESULT --- */
-        .manifest-container { max-width: 900px; margin: 0 auto; background: var(--card); border-radius: 24px; overflow: hidden; border: 1px solid var(--border); }
-        #map { height: 400px; width: 100%; filter: grayscale(1) invert(1) brightness(0.7); }
-        .manifest-details { padding: 45px; }
-        .val-badge { background: rgba(204,0,0,0.1); border: 1px solid var(--tesla-red); color: var(--tesla-red); padding: 25px; border-radius: 15px; text-align: center; margin: 30px 0; }
+        #map { height: 450px; width: 100%; filter: grayscale(1) invert(1) brightness(0.8); }
+        .manifest { max-width: 1000px; margin: -50px auto 100px; background: #000; border: 1px solid var(--border); position: relative; z-index: 10; border-radius: 20px; overflow: hidden; }
+        .manifest-body { padding: 50px; }
 
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            h1 { font-size: 2.8rem; }
-            .counter-value { font-size: 2rem; }
-        }
+        @media (max-width: 768px) { .hero-musk h1 { font-size: 2.5rem; } .nav-links { display: none; } }
     </style>
 </head>
 <body>
@@ -77,128 +80,133 @@
     <nav>
         <a class="logo" onclick="showPage('home')">TESLA</a>
         <div class="nav-links">
-            <span onclick="showPage('home')">NETWORK</span>
-            <span onclick="showPage('impact')">2026 IMPACT</span>
-            <span onclick="showPage('home')">SUPPORT</span>
+            <span onclick="showPage('home')">Logistics</span>
+            <span onclick="showPage('impact')">112M Impact</span>
+            <span onclick="showPage('testi')">Testimonials</span>
         </div>
     </nav>
 
     <div id="notification-area"></div>
 
     <div id="home" class="page active-page">
-        <div class="hero">
-            <h1>Autonomous Global Logistics.</h1>
-            <p style="color: var(--text-dim); font-size: 1.1rem;">Decentralized, Electric, and Secured by Tesla Node 2026.</p>
+        <div class="hero-musk">
+            <h1>Autonomous Reality.</h1>
+            <p style="color: #ccc;">2026 Global Asset Monitoring Interface</p>
             <div class="search-box">
                 <input type="text" id="track-id" placeholder="ID: TL-78901234">
                 <button class="btn-track" onclick="startTracking()">TRACK</button>
             </div>
         </div>
-
-        <div class="impact-grid" style="margin-top: 40px;">
-            <div class="impact-card" style="padding: 25px;">
-                <p style="font-style: italic; color: #ccc;">"The $700k transit from Austin to my home in Carolina was verified every mile. Tesla's 2026 infrastructure is years ahead."</p>
-                <strong>- Maria Velez Wampl</strong>
-            </div>
-            <div class="impact-card" style="padding: 25px;">
-                <p style="font-style: italic; color: #ccc;">"By moving our freight to the Tesla Autonomous Network, we've hit our 2025 Net Zero goals a year early."</p>
-                <strong>- Global Logistics Corp</strong>
-            </div>
+        
+        <div style="text-align: center; padding: 100px 20px;">
+            <h2 style="font-weight: 300; font-size: 2rem; color: #888;">"We are building a future where logistics is a solved problem."</h2>
+            <p style="text-transform: uppercase; letter-spacing: 3px; font-size: 0.7rem;">— Elon Musk, 2026 Logistics Keynote</p>
         </div>
     </div>
 
     <div id="impact" class="page">
-        <div class="impact-header">
-            <h1 style="color: var(--tesla-red);">$112,000,000</h1>
-            <p style="max-width: 600px; margin: 0 auto; color: var(--text-dim);">Following the historic 2025 endowment, Tesla Logistics has deployed 268,000 shares to revolutionize global sustainability.</p>
-        </div>
-
-        <div class="counter-box">
-            <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; margin-bottom: 10px;">Live CO2 Avoidance (Metric Tons)</p>
-            <div class="counter-value" id="carbon-counter">32,145,901.000</div>
-            <p style="color: #444; font-size: 0.75rem; margin-top: 15px;">Real-time calculation based on global fleet efficiency (v2.6)</p>
+        <div class="counter-section">
+            <h1 style="color: var(--tesla-red); margin-bottom: 0;">$112,000,000</h1>
+            <p style="color: #666; margin-top: 5px;">2025-2026 EQUITY SUSTAINABILITY FUND</p>
+            <div class="counter-val" id="carbon-counter">34,102,400.000</div>
+            <p style="font-size: 0.7rem; color: #444;">CO2 Metric Tons Avoided via Tesla Autonomous Freight</p>
         </div>
 
         <div class="impact-grid">
             <div class="impact-card">
-                <h3>Puerto Rico Resiliency</h3>
-                <p style="color: var(--text-dim); line-height: 1.6;">The 2025/2026 initiative allocated $45M specifically for <strong>Villa Fontana, Carolina</strong> and surrounding regions. This funding deployed 1,200 industrial Megapacks to ensure that logistics hubs remain online even during complete grid failure.</p>
+                <h3 style="color: var(--tesla-red);">Austin Hub Expansion</h3>
+                <p style="color: #888; font-size: 0.9rem;">Following the 2025 donation, the Austin-Bergstrom (AUS) terminal was converted into the world's first 100% solar-powered freight node. It now processes $1.2B in cargo monthly with zero grid reliance.</p>
             </div>
             <div class="impact-card">
-                <h3>The Austin-SJU Corridor</h3>
-                <p style="color: var(--text-dim); line-height: 1.6;">Funds from the $112M grant established the first 100% electric air-and-sea bridge between Austin, TX and San Juan, PR. This corridor uses autonomous Semi-trucks and zero-emission transit to move high-value assets ($700k+) with zero carbon footprint.</p>
+                <h3 style="color: var(--tesla-red);">Carolina Resiliency</h3>
+                <p style="color: #888; font-size: 0.9rem;">$45M was allocated specifically to Puerto Rico. In Carolina, we've installed a localized Starlink mesh to ensure autonomous delivery of high-value freight even during total telecommunication outages.</p>
             </div>
             <div class="impact-card">
-                <h3>Future Talent</h3>
-                <p style="color: var(--text-dim); line-height: 1.6;">$20M was dedicated to the 2026 STEM Fellowship, training students in advanced JavaScript, Autonomous AI, and Blockchain logistics to manage the next generation of Tesla's global nodes.</p>
+                <h3 style="color: var(--tesla-red);">Next-Gen STEM</h3>
+                <p style="color: #888; font-size: 0.9rem;">Part of the $112M grant funds the 2026 Autonomous Engineering Fellowship, providing software training for over 50,000 developers globally to maintain the Tesla Logistics Node system.</p>
             </div>
         </div>
     </div>
 
+    <div id="testi" class="page">
+        <div style="padding: 50px 5%; text-align: center;">
+            <h1>Verified Trust.</h1>
+            <p style="color: #666;">Feedback from our 2026 Priority Asset Holders</p>
+        </div>
+        <div class="testimonial-container">
+            <div class="testi-card"><div class="stars">★★★★★</div>"The $700k cash freight from Austin arrived in Carolina perfectly. Tesla's transparency is unreal."<br><strong>- Maria Velez</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"We switched our entire medical supply chain to Tesla Autonomous. Zero delays in 2026."<br><strong>- Dr. Aris H.</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Secure, fast, and electric. The future of logistics is finally here."<br><strong>- Marcus Thorne</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"The Starlink tracking integration means I never lose sight of my cargo, even over the ocean."<br><strong>- Sarah J., Logistics VP</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Tesla Semi-trucks saved our company $2M in fuel costs this quarter alone."<br><strong>- Freight Master LLC</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Incredible service to Puerto Rico. The delivery to Villa Fontana was seamless."<br><strong>- Carlos M.</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Authenticated by Tesla Node 2026. The security protocol is military grade."<br><strong>- TechSecure Intl.</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Elon Musk promised autonomous logistics, and 2026 is the year he delivered it."<br><strong>- Wired Magazine</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Fastest delivery from Austin I've ever seen. 100% green energy too."<br><strong>- EcoLogistics PR</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Tracking a $700,000 asset requires absolute trust. Tesla provides that."<br><strong>- Private Wealth Mgmt</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"The impact of that $112M donation is visible everywhere in the Austin hub."<br><strong>- TX Sustainability</strong></div>
+            <div class="testi-card"><div class="stars">★★★★★</div>"Efficient, sleek, and high-tech. Best logistics platform on the planet."<br><strong>- Julian V.</strong></div>
+        </div>
+    </div>
+
     <div id="tracking" class="page">
-        <div class="manifest-container">
-            <div id="map"></div>
-            <div class="manifest-details">
+        <div id="map"></div>
+        <div class="manifest">
+            <div class="manifest-body">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h2 style="margin:0;">Secure Digital Manifest</h2>
-                    <span style="background:#00ff00; color:#000; padding:5px 12px; border-radius:50px; font-size:0.7rem; font-weight:900;">SECURED</span>
+                    <h2 style="margin:0;">Verified Manifest</h2>
+                    <span style="color:#00ff00; font-size:0.7rem; font-weight:bold;">● SATELLITE LINK ACTIVE</span>
                 </div>
                 
-                <div class="val-badge">
-                    <small style="text-transform:uppercase; opacity:0.6;">Verified Asset Valuation</small>
-                    <div style="font-size: 2.5rem; font-weight: 700;">$700,000.00</div>
+                <div style="background: rgba(204,0,0,0.1); border: 1px dashed var(--tesla-red); padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                    <p style="margin:0; font-size:0.7rem; color:#888; text-transform:uppercase;">Asset Value (USD)</p>
+                    <h1 style="margin:5px 0; font-size:3rem; letter-spacing:1px;">$700,000.00</h1>
                 </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:30px;">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
                     <div>
-                        <small style="color:var(--text-dim)">CONSIGNEE</small><br>
-                        <strong>Maria Velez Wampl</strong><br>
+                        <small style="color:#555">CONSIGNEE</small><br>
+                        <strong>Maria Velez</strong><br>
                         <small>Villa Fontana, Carolina, PR 00983</small>
                     </div>
                     <div>
-                        <small style="color:var(--text-dim)">FREIGHT STATUS</small><br>
-                        <strong>In Flight: AUS → SJU</strong><br>
-                        <small>Departed Austin Hub Jan 16, 2026</small>
+                        <small style="color:#555">ROUTE</small><br>
+                        <strong>AUS (Austin) ➔ SJU (San Juan)</strong><br>
+                        <small>Autonomous Flight Path B-202</small>
                     </div>
                 </div>
-
-                <button onclick="window.print()" style="margin-top:40px; width:100%; background:#fff; color:#000; border:none; padding:18px; border-radius:10px; font-weight:700; cursor:pointer;">DOWNLOAD PDF RECEIPT</button>
+                
+                <button onclick="window.print()" style="margin-top:40px; width:100%; padding:20px; background:#fff; color:#000; font-weight:bold; border:none; border-radius:8px; cursor:pointer;">DOWNLOAD SECURE PDF RECEIPT</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- LIVE CARBON COUNTER LOGIC ---
-        // Based on 32M tons per year / 31.5M seconds in a year = ~1.015 tons per second
-        let carbonBase = 32145901.425;
-        function updateCarbon() {
-            carbonBase += 0.0031; // Increment per 100ms
-            document.getElementById('carbon-counter').innerText = carbonBase.toLocaleString(undefined, {minimumFractionDigits: 3});
-        }
-        setInterval(updateCarbon, 100);
+        // --- CARBON COUNTER ---
+        let count = 34102400.425;
+        setInterval(() => {
+            count += 0.0041;
+            document.getElementById('carbon-counter').innerText = count.toLocaleString(undefined, {minimumFractionDigits: 3});
+        }, 100);
 
         // --- SIMULATION ENGINE ---
-        const users = ["Mateo", "Sarah", "Olamide", "Klaus", "Elena", "Wei", "Hiro", "Amara", "Lucas", "Javier"];
-        const goods = ["Model 3", "Powerwall", "Freight Cash ($150k)", "Cybertruck", "Solar Manifest", "Semi-Truck Component"];
-        const cities = ["Austin", "Berlin", "San Juan", "Shanghai", "Mexico City", "Carolina"];
+        const names = ["Julian", "Sarah", "Elena", "Marcus", "Chen", "Sofia", "Omar", "Aria", "Liam", "Zoe"];
+        const actions = ["received Model S", "received $500k Freight", "just ordered Cybertruck", "confirmed delivery", "authenticated cargo"];
+        const locations = ["Austin", "Carolina", "Berlin", "Shanghai", "London"];
 
-        function createLiveNotice() {
+        function toast() {
             const area = document.getElementById('notification-area');
-            const user = users[Math.floor(Math.random()*users.length)];
-            const item = goods[Math.floor(Math.random()*goods.length)];
-            const city = cities[Math.floor(Math.random()*cities.length)];
+            const n = names[Math.floor(Math.random()*names.length)];
+            const a = actions[Math.floor(Math.random()*actions.length)];
+            const l = locations[Math.floor(Math.random()*locations.length)];
             
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.innerHTML = `<strong>${user}</strong> from ${city} <br> ${Math.random() > 0.3 ? 'received' : 'ordered'} <strong>${item}</strong>`;
-            
-            area.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }, 5000);
+            const div = document.createElement('div');
+            div.className = 'toast';
+            div.innerHTML = `<strong>${n}</strong> in ${l} <br> ${a}`;
+            area.appendChild(div);
+            setTimeout(() => { div.style.opacity = '0'; setTimeout(() => div.remove(), 500); }, 5000);
         }
-        setInterval(createLiveNotice, 4000);
+        setInterval(toast, 4000);
 
         // --- NAVIGATION ---
         function showPage(id) {
@@ -211,25 +219,23 @@
             const id = document.getElementById('track-id').value.trim();
             if(id === "TL-78901234") {
                 showPage('tracking');
-                setTimeout(initMap, 200);
+                setTimeout(initMap, 100);
             } else {
                 alert("Security Verification Failed.");
             }
         }
 
-        let mapInstance = null;
+        let map = null;
         function initMap() {
-            if(mapInstance) mapInstance.remove();
-            mapInstance = L.map('map', {zoomControl: false}).setView([25, -82], 4);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(mapInstance);
-            
+            if(map) map.remove();
+            map = L.map('map', {zoomControl: false}).setView([25, -82], 4);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
             const Austin = [30.1975, -97.6664];
             const Carolina = [18.4394, -66.0018];
-            const path = L.polyline([Austin, Carolina], {color: '#cc0000', weight: 2, dashArray: '10,10'}).addTo(mapInstance);
-            
-            L.circleMarker(Austin, {radius: 5, color: '#cc0000', fillOpacity:1}).addTo(mapInstance);
-            L.circleMarker(Carolina, {radius: 5, color: '#fff', fillOpacity:1}).addTo(mapInstance);
-            mapInstance.fitBounds(path.getBounds(), {padding: [50, 50]});
+            const line = L.polyline([Austin, Carolina], {color: '#cc0000', weight: 2, dashArray: '10,10'}).addTo(map);
+            L.circleMarker(Austin, {radius: 5, color: '#cc0000', fillOpacity: 1}).addTo(map);
+            L.circleMarker(Carolina, {radius: 5, color: '#fff', fillOpacity: 1}).addTo(map);
+            map.fitBounds(line.getBounds(), {padding: [50, 50]});
         }
     </script>
 </body>
