@@ -2,32 +2,38 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesla Logistics | Autonomous Supply Chain</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tesla Logistics | Autonomous Network</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
         :root { --tesla-red: #cc0000; --tesla-dark: #171a20; }
-        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; color: #393c41; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; color: #393c41; background: #fff; -webkit-tap-highlight-color: transparent; }
         
-        nav { display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border-bottom: 1px solid #eee; }
-        .logo { font-weight: 700; letter-spacing: 3px; color: var(--tesla-dark); text-decoration: none; }
+        /* Mobile-First Header */
+        nav { display: flex; justify-content: center; padding: 15px; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-weight: 700; letter-spacing: 3px; color: var(--tesla-dark); }
         
         .page { display: none; padding: 20px; box-sizing: border-box; }
-        .active { display: block; }
+        .active { display: block; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .hero { background: #111; color: white; padding: 50px 20px; text-align: center; border-radius: 0 0 20px 20px; }
-        .search-box { background: white; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; margin-top: 20px; }
-        .search-box input { border: none; padding: 15px; font-size: 1rem; outline: none; }
-        .search-box button { background: var(--tesla-red); color: white; border: none; padding: 15px; font-weight: bold; }
+        /* Hero / Search */
+        .hero { background: #000; color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 25px 25px; }
+        .search-box { background: white; border-radius: 10px; display: flex; flex-direction: column; margin-top: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .search-box input { border: none; padding: 18px; font-size: 1rem; outline: none; text-align: center; }
+        .search-box button { background: var(--tesla-red); color: white; border: none; padding: 16px; font-weight: bold; font-size: 1rem; }
 
-        .receipt { border: 1px solid #ddd; padding: 20px; border-radius: 12px; background: white; }
-        #map { height: 250px; width: 100%; border-radius: 8px; margin-bottom: 15px; background: #eee; }
+        /* Tracking Receipt */
+        .receipt { border: 1px solid #eee; padding: 20px; border-radius: 15px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        #map { height: 220px; width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #ddd; }
 
-        #email-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center; }
-        .modal-box { background: white; padding: 25px; border-radius: 15px; width: 85%; max-width: 400px; text-align: center; }
+        /* Modal Overlay */
+        #email-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(5px); }
+        .modal-box { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 380px; text-align: center; box-sizing: border-box; }
+        .modal-box input { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -36,41 +42,43 @@
 
     <div id="email-modal">
         <div class="modal-box">
-            <h3>Digital Receipt</h3>
-            <p style="font-size:0.9rem; color:#666;">Enter your details to receive the official manifest via email.</p>
+            <h3 style="margin-top:0;">Digital Manifest</h3>
+            <p style="font-size:0.9rem; color:#666; margin-bottom:20px;">Confirm details to receive your official receipt via email.</p>
             
-            <form action="https://submit.jotform.com/submit/260152403302035/" method="POST" onsubmit="return handleFormSubmit()">
-                <input type="text" name="q3_name" placeholder="Full Name" required style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
-                <input type="email" name="q4_email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
-                <input type="hidden" name="q5_trackingId" id="hidden-id">
+            <form action="https://submit.jotform.com/submit/260152595945565/" method="POST" onsubmit="return handleFormSubmit()">
+                <input type="text" name="q3_name" placeholder="Full Name" required>
+                <input type="email" name="q4_email" placeholder="Email Address" required>
+                <input type="hidden" name="q5_trackingId" id="hidden-track-id">
                 
-                <button type="submit" style="width:100%; background:black; color:white; padding:12px; border-radius:5px; border:none; font-weight:bold;">SEND & VIEW TRACKING</button>
+                <button type="submit" style="width:100%; background:black; color:white; padding:15px; border-radius:10px; border:none; font-weight:bold; font-size:1rem; margin-top:10px;">SUBMIT & VIEW TRACKING</button>
             </form>
-            <p onclick="closeModal()" style="margin-top:15px; color:#888; font-size:0.8rem;">Cancel</p>
+            <p onclick="closeModal()" style="margin-top:18px; color:#999; font-size:0.85rem; cursor:pointer;">Cancel</p>
         </div>
     </div>
 
     <div id="home" class="page active">
         <div class="hero">
-            <h1 style="margin:0;">Secure Tracking</h1>
-            <p style="font-size:0.9rem; color:#aaa;">Global Autonomous Network</p>
+            <h2 style="margin:0;">Secure Tracking</h2>
+            <p style="font-size:0.85rem; color:#888; margin-top:5px;">Real-time asset monitoring</p>
             <div class="search-box">
-                <input type="text" id="track-id" placeholder="TL-78901234">
+                <input type="text" id="user-track-id" placeholder="TL-78901234">
                 <button onclick="checkID()">TRACK ASSET</button>
             </div>
-            <p id="err" style="color:#ffcc00; margin-top:10px; font-size:0.8rem;"></p>
+            <p id="err" style="color:#ffcc00; margin-top:12px; font-size:0.8rem; font-weight:600;"></p>
         </div>
     </div>
 
     <div id="tracking" class="page">
         <div class="receipt">
             <div id="map"></div>
-            <h2 style="margin:0; color:var(--tesla-red);">IN TRANSIT</h2>
-            <p id="res-name" style="margin:5px 0; font-weight:bold;"></p>
-            <p style="font-size:0.8rem; color:#888;">Authenticated via Tesla Global Node</p>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 style="margin:0; color:var(--tesla-red);">IN TRANSIT</h3>
+                <span style="font-size:0.7rem; color:#aaa;">Authenticated Node</span>
+            </div>
+            <p id="res-consignee" style="margin:10px 0; font-weight:bold;"></p>
             <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-            <div id="timeline" style="font-size:0.85rem; line-height:2;"></div>
-            <button onclick="location.reload()" style="width:100%; margin-top:20px; padding:12px; border:none; background:#f4f4f4; border-radius:8px;">New Search</button>
+            <div id="res-timeline" style="font-size:0.85rem; line-height:2.2; color:#555;"></div>
+            <button onclick="location.reload()" style="width:100%; margin-top:25px; padding:12px; border:none; background:#f5f5f5; border-radius:10px; font-weight:600;">NEW SEARCH</button>
         </div>
     </div>
 
@@ -78,44 +86,46 @@
         const DB = {
             "TL-78901234": {
                 name: "Maria Velez Wampl",
-                hist: ["Jan 15: Arrived JFK Intl (NY)", "Jan 13: Departed Denver Hub", "Jan 12: Picked up Puerto Rico Hub"]
+                history: ["• Jan 15: Arrived JFK Intl (NY)", "• Jan 13: Departed Denver Hub", "• Jan 12: Picked up Puerto Rico Hub"]
             }
         };
 
         function checkID() {
-            const id = document.getElementById('track-id').value.trim();
+            const id = document.getElementById('user-track-id').value.trim();
             if(DB[id]) {
-                document.getElementById('hidden-id').value = id;
+                document.getElementById('hidden-track-id').value = id;
                 document.getElementById('email-modal').style.display='flex';
             } else {
-                document.getElementById('err').innerText = "ID Not Found";
+                document.getElementById('err').innerText = "TRACKING ID NOT RECOGNIZED";
             }
         }
 
-        function closeModal() { document.getElementById('email-modal').style.display='none'; }
+        function closeModal() { document.getElementById('email-modal').style.display = 'none'; }
 
         function handleFormSubmit() {
-            const id = document.getElementById('track-id').value;
-            // Delay showing the map slightly so the form has time to fire
-            setTimeout(() => { renderTracking(id); }, 500);
+            const id = document.getElementById('user-track-id').value.trim();
+            // This lets the form send before the page changes
+            setTimeout(() => { renderTracking(id); }, 800);
             return true; 
         }
 
         function renderTracking(id) {
             closeModal();
             const data = DB[id];
-            document.getElementById('res-name').innerText = "Consignee: " + data.name;
-            document.getElementById('timeline').innerHTML = data.hist.map(h => "• " + h + "<br>").join('');
+            document.getElementById('res-consignee').innerText = "Consignee: " + data.name;
+            document.getElementById('res-timeline').innerHTML = data.history.join('<br>');
             
             document.getElementById('home').classList.remove('active');
             document.getElementById('tracking').classList.add('active');
 
-            // Lightweight Mobile Map
-            const m = L.map('map', {zoomControl: false}).setView([30, -70], 4);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
-            L.polyline([[40,-74], [18,-66]], {color:'red', weight:2, dashArray:'5,5'}).addTo(m);
-            L.circleMarker([40,-74], {radius: 5, color: 'red'}).addTo(m);
-            L.circleMarker([18,-66], {radius: 5, color: 'black'}).addTo(m);
+            // Map Setup
+            setTimeout(() => {
+                const m = L.map('map', {zoomControl: false, dragging: !L.Browser.mobile}).setView([28, -70], 4);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
+                L.polyline([[40,-74], [18,-66]], {color:'red', weight:2, dashArray:'4,4'}).addTo(m);
+                L.circleMarker([40,-74], {radius: 4, color: 'red', fillOpacity: 1}).addTo(m);
+                L.circleMarker([18,-66], {radius: 4, color: 'black', fillOpacity: 1}).addTo(m);
+            }, 100);
         }
     </script>
 </body>
