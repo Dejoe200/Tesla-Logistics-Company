@@ -3,129 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tesla Logistics | Autonomous Network</title>
+    <title>Tesla Global Logistics | Austin to Carolina</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        :root { --tesla-red: #cc0000; --tesla-dark: #171a20; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; color: #393c41; background: #fff; -webkit-tap-highlight-color: transparent; }
-        
-        /* Mobile-First Header */
-        nav { display: flex; justify-content: center; padding: 15px; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-weight: 700; letter-spacing: 3px; color: var(--tesla-dark); }
-        
-        .page { display: none; padding: 20px; box-sizing: border-box; }
-        .active { display: block; animation: fadeIn 0.3s ease-in; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root { 
+            --tesla-red: #cc0000; 
+            --tesla-dark: #171a20; 
+            --glass: rgba(255, 255, 255, 0.1);
+        }
 
-        /* Hero / Search */
-        .hero { background: #000; color: white; padding: 40px 20px; text-align: center; border-radius: 0 0 25px 25px; }
-        .search-box { background: white; border-radius: 10px; display: flex; flex-direction: column; margin-top: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .search-box input { border: none; padding: 18px; font-size: 1rem; outline: none; text-align: center; }
-        .search-box button { background: var(--tesla-red); color: white; border: none; padding: 16px; font-weight: bold; font-size: 1rem; }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            background-color: #000; 
+            color: #fff;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        /* Tracking Receipt */
-        .receipt { border: 1px solid #eee; padding: 20px; border-radius: 15px; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        #map { height: 220px; width: 100%; border-radius: 10px; margin-bottom: 15px; border: 1px solid #ddd; }
+        /* Video/Hero Background Effect */
+        .bg-gradient {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+            z-index: -1;
+        }
 
-        /* Modal Overlay */
-        #email-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(5px); }
-        .modal-box { background: white; padding: 25px; border-radius: 20px; width: 85%; max-width: 380px; text-align: center; box-sizing: border-box; }
-        .modal-box input { width: 100%; padding: 14px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        /* Elegant Navigation */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 40px; background: transparent;
+            position: absolute; width: 100%; box-sizing: border-box;
+        }
+        .logo { font-weight: 800; letter-spacing: 6px; font-size: 1.2rem; cursor: pointer; }
+
+        /* Magic Search UI */
+        .container {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; min-height: 100vh; text-align: center;
+            padding: 20px; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        h1 { font-size: 3rem; font-weight: 300; letter-spacing: -1px; margin-bottom: 10px; }
+        p.subtitle { color: #888; margin-bottom: 40px; font-size: 1.1rem; }
+
+        .search-container {
+            width: 100%; max-width: 450px; position: relative;
+        }
+
+        input {
+            width: 100%; background: #222; border: 1px solid #333;
+            padding: 20px; border-radius: 30px; color: #fff;
+            font-size: 1rem; text-align: center; transition: 0.3s;
+            outline: none; box-sizing: border-box;
+        }
+        input:focus { border-color: var(--tesla-red); background: #2a2a2a; }
+
+        .track-btn {
+            margin-top: 20px; width: 100%; background: var(--tesla-red);
+            color: #fff; border: none; padding: 18px; border-radius: 30px;
+            font-weight: 700; cursor: pointer; transition: 0.4s; text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .track-btn:hover { background: #ff0000; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(204, 0, 0, 0.3); }
+
+        /* Tracking Results Page (Hidden initially) */
+        #results { 
+            display: none; width: 100%; max-width: 900px; margin: 80px auto; 
+            padding: 20px; box-sizing: border-box;
+        }
+
+        .card {
+            background: #111; border: 1px solid #222; border-radius: 20px;
+            overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        #map { height: 350px; width: 100%; filter: grayscale(1) invert(1) brightness(0.8); }
+
+        .details { padding: 40px; }
+        .status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .badge { background: var(--tesla-red); padding: 6px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+
+        .timeline { border-left: 2px solid #333; padding-left: 30px; margin-left: 10px; }
+        .step { position: relative; margin-bottom: 30px; }
+        .step::before {
+            content: ''; position: absolute; left: -37px; top: 5px;
+            width: 12px; height: 12px; background: #333; border-radius: 50%;
+        }
+        .step.active::before { background: var(--tesla-red); box-shadow: 0 0 10px var(--tesla-red); }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            nav { padding: 20px; }
+            .details { padding: 25px; }
+        }
     </style>
 </head>
 <body>
 
-    <nav><div class="logo">TESLA LOGISTICS</div></nav>
+    <div class="bg-gradient"></div>
 
-    <div id="email-modal">
-        <div class="modal-box">
-            <h3 style="margin-top:0;">Digital Manifest</h3>
-            <p style="font-size:0.9rem; color:#666; margin-bottom:20px;">Confirm details to receive your official receipt via email.</p>
-            
-            <form action="https://submit.jotform.com/submit/260152595945565/" method="POST" onsubmit="return handleFormSubmit()">
-                <input type="text" name="q3_name" placeholder="Full Name" required>
-                <input type="email" name="q4_email" placeholder="Email Address" required>
-                <input type="hidden" name="q5_trackingId" id="hidden-track-id">
-                
-                <button type="submit" style="width:100%; background:black; color:white; padding:15px; border-radius:10px; border:none; font-weight:bold; font-size:1rem; margin-top:10px;">SUBMIT & VIEW TRACKING</button>
-            </form>
-            <p onclick="closeModal()" style="margin-top:18px; color:#999; font-size:0.85rem; cursor:pointer;">Cancel</p>
+    <nav><div class="logo">TESLA</div></nav>
+
+    <div class="container" id="search-ui">
+        <h1>Autonomous Logistics.</h1>
+        <p class="subtitle">Global Tracking for the Future of Transport.</p>
+        
+        <div class="search-container">
+            <input type="text" id="track-id" placeholder="TL-78901234" autocomplete="off">
+            <button class="track-btn" onclick="magicReveal()">Secure Track</button>
+            <p id="err" style="color: var(--tesla-red); margin-top: 15px; font-size: 0.9rem; opacity: 0; transition: 0.3s;"></p>
         </div>
     </div>
 
-    <div id="home" class="page active">
-        <div class="hero">
-            <h2 style="margin:0;">Secure Tracking</h2>
-            <p style="font-size:0.85rem; color:#888; margin-top:5px;">Real-time asset monitoring</p>
-            <div class="search-box">
-                <input type="text" id="user-track-id" placeholder="TL-78901234">
-                <button onclick="checkID()">TRACK ASSET</button>
-            </div>
-            <p id="err" style="color:#ffcc00; margin-top:12px; font-size:0.8rem; font-weight:600;"></p>
-        </div>
-    </div>
-
-    <div id="tracking" class="page">
-        <div class="receipt">
+    <div id="results">
+        <div class="card">
             <div id="map"></div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <h3 style="margin:0; color:var(--tesla-red);">IN TRANSIT</h3>
-                <span style="font-size:0.7rem; color:#aaa;">Authenticated Node</span>
+            <div class="details">
+                <div class="status-row">
+                    <div>
+                        <h2 style="margin:0;">Asset Tracking</h2>
+                        <p style="color:#666; margin:0; font-size:0.9rem;">Ref: <span id="ref-id"></span></p>
+                    </div>
+                    <div class="badge">IN TRANSIT</div>
+                </div>
+
+                <div style="background:#1a1a1a; padding:20px; border-radius:15px; margin-bottom:30px;">
+                    <p style="margin:0; font-size:0.8rem; color:#888; text-transform:uppercase;">Destination Address</p>
+                    <p style="margin:5px 0 0 0; font-weight:bold;">Villa Fontana, Carolina, PR 00983</p>
+                </div>
+
+                <div class="timeline">
+                    <div class="step active">
+                        <strong>In Flight: AUS → SJU</strong><br>
+                        <small style="color:#888;">Austin-Bergstrom Intl Airport to San Juan</small>
+                    </div>
+                    <div class="step">
+                        <strong>Departed Distribution Center</strong><br>
+                        <small style="color:#888;">Austin, TX - Jan 16, 2026</small>
+                    </div>
+                    <div class="step">
+                        <strong>Manifest Authenticated</strong><br>
+                        <small style="color:#888;">Tesla Global Node 401</small>
+                    </div>
+                </div>
+
+                <button onclick="location.reload()" style="background:transparent; border:1px solid #333; color:#888; width:100%; padding:15px; border-radius:30px; margin-top:20px; cursor:pointer;">New Search</button>
             </div>
-            <p id="res-consignee" style="margin:10px 0; font-weight:bold;"></p>
-            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-            <div id="res-timeline" style="font-size:0.85rem; line-height:2.2; color:#555;"></div>
-            <button onclick="location.reload()" style="width:100%; margin-top:25px; padding:12px; border:none; background:#f5f5f5; border-radius:10px; font-weight:600;">NEW SEARCH</button>
         </div>
     </div>
 
     <script>
-        const DB = {
-            "TL-78901234": {
-                name: "Maria Velez Wampl",
-                history: ["• Jan 15: Arrived JFK Intl (NY)", "• Jan 13: Departed Denver Hub", "• Jan 12: Picked up Puerto Rico Hub"]
-            }
-        };
+        const VALID_ID = "TL-78901234";
 
-        function checkID() {
-            const id = document.getElementById('user-track-id').value.trim();
-            if(DB[id]) {
-                document.getElementById('hidden-track-id').value = id;
-                document.getElementById('email-modal').style.display='flex';
+        function magicReveal() {
+            const inputId = document.getElementById('track-id').value.trim();
+            const err = document.getElementById('err');
+
+            if(inputId === VALID_ID) {
+                // The "Magic" Transition
+                document.getElementById('search-ui').style.opacity = '0';
+                document.getElementById('search-ui').style.transform = 'translateY(-50px)';
+                
+                setTimeout(() => {
+                    document.getElementById('search-ui').style.display = 'none';
+                    document.getElementById('results').style.display = 'block';
+                    document.getElementById('ref-id').innerText = inputId;
+                    initMagicMap();
+                    window.scrollTo(0,0);
+                }, 600);
             } else {
-                document.getElementById('err').innerText = "TRACKING ID NOT RECOGNIZED";
+                err.innerText = "Access Denied. Verification Required.";
+                err.style.opacity = '1';
             }
         }
 
-        function closeModal() { document.getElementById('email-modal').style.display = 'none'; }
-
-        function handleFormSubmit() {
-            const id = document.getElementById('user-track-id').value.trim();
-            // This lets the form send before the page changes
-            setTimeout(() => { renderTracking(id); }, 800);
-            return true; 
-        }
-
-        function renderTracking(id) {
-            closeModal();
-            const data = DB[id];
-            document.getElementById('res-consignee').innerText = "Consignee: " + data.name;
-            document.getElementById('res-timeline').innerHTML = data.history.join('<br>');
+        function initMagicMap() {
+            // AUS: 30.1975, -97.6664 | SJU: 18.4394, -66.0018
+            const map = L.map('map', { zoomControl: false }).setView([25, -82], 4);
             
-            document.getElementById('home').classList.remove('active');
-            document.getElementById('tracking').classList.add('active');
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
-            // Map Setup
-            setTimeout(() => {
-                const m = L.map('map', {zoomControl: false, dragging: !L.Browser.mobile}).setView([28, -70], 4);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
-                L.polyline([[40,-74], [18,-66]], {color:'red', weight:2, dashArray:'4,4'}).addTo(m);
-                L.circleMarker([40,-74], {radius: 4, color: 'red', fillOpacity: 1}).addTo(m);
-                L.circleMarker([18,-66], {radius: 4, color: 'black', fillOpacity: 1}).addTo(m);
-            }, 100);
+            const Austin = [30.1975, -97.6664];
+            const Carolina = [18.4394, -66.0018];
+
+            // Curved Flight Path Logic
+            const latlngs = [Austin, Carolina];
+            const path = L.polyline(latlngs, {
+                color: '#cc0000', weight: 2, dashArray: '10, 10', opacity: 0.8
+            }).addTo(map);
+
+            L.circleMarker(Austin, { radius: 6, color: '#cc0000', fillOpacity: 1 }).addTo(map).bindPopup("AUS Airport");
+            L.circleMarker(Carolina, { radius: 6, color: '#fff', fillOpacity: 1 }).addTo(map).bindPopup("Carolina Destination");
+
+            map.fitBounds(path.getBounds(), { padding: [50, 50] });
         }
     </script>
 </body>
