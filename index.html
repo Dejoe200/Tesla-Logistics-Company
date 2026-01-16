@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tesla Logistics | Autonomous Global Supply</title>
+    <style>
+        :root { 
+            --tesla-red: #cc0000; 
+            --tesla-dark: #171a20; 
+            --tesla-silver: #f4f4f4; 
+            --text-main: #393c41; 
+        }
+
+        /* General Styling */
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--text-main); line-height: 1.6; }
+        nav { display: flex; justify-content: space-between; padding: 20px 5%; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-weight: 700; letter-spacing: 4px; font-size: 1.2rem; color: var(--tesla-dark); text-decoration: none; }
+        .nav-links a { margin-left: 25px; text-decoration: none; color: var(--text-main); font-weight: 600; cursor: pointer; }
+
+        /* Page Management */
+        .page { display: none; padding: 60px 8%; min-height: 80vh; }
+        .active { display: block; animation: fadeIn 0.6s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Hero & Search */
+        .hero {
+            height: 60vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+            url('https://images.unsplash.com/photo-1591768793355-74d7c813ec44?auto=format&fit=crop&w=1600&q=80');
+            background-size: cover; background-position: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
+        }
+        .search-box { background: white; padding: 8px; border-radius: 4px; display: flex; width: 90%; max-width: 600px; margin-top: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .search-box input { border: none; padding: 15px; flex-grow: 1; outline: none; font-size: 1.1rem; }
+        .search-box button { background: var(--tesla-red); color: white; border: none; padding: 0 35px; font-weight: bold; cursor: pointer; }
+
+        /* Notifications */
+        #notification {
+            position: fixed; bottom: 30px; left: 30px; background: white; border-left: 5px solid var(--tesla-red);
+            padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            z-index: 2000; transform: translateX(-150%); transition: transform 0.5s ease;
+        }
+        #notification.show { transform: translateX(0); }
+
+        /* Impact Section */
+        .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center; margin-top: 40px; }
+        .musk-img { width: 100%; border-radius: 8px; filter: grayscale(20%); }
+
+        /* Receipt & Print Logic */
+        .receipt-card { border: 1px solid #ddd; padding: 40px; border-radius: 8px; max-width: 800px; margin: 0 auto; background: white; position: relative; }
+        .print-btn { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; margin-bottom: 20px; }
+        
+        @media print {
+            nav, .print-btn, footer, .live-ticker { display: none !important; }
+            .page { padding: 0; }
+            .receipt-card { border: none; box-shadow: none; width: 100%; }
+            body { background: white; }
+        }
+
+        footer { background: var(--tesla-dark); color: #777; padding: 60px 8%; text-align: center; font-size: 0.8rem; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a class="logo" onclick="showPage('home')">TESLA</a>
+        <div class="nav-links">
+            <a onclick="showPage('home')">Home</a>
+            <a onclick="showPage('impact')">Impact</a>
+            <a onclick="showPage('testimonials')">Trust</a>
+        </div>
+    </nav>
+
+    <div id="notification">
+        <strong id="notif-user" style="color:var(--tesla-red);"></strong><br>
+        <span id="notif-msg"></span>
+    </div>
+
+    <div id="home" class="page active">
+        <section class="hero">
+            <h1 style="font-size: 4rem;">Secure Logistics.</h1>
+            <p>Enter your unique tracking ID for real-time asset monitoring.</p>
+            <div class="search-box">
+                <input type="text" id="track-input" placeholder="TL-78901234">
+                <button onclick="handleSearch()">TRACK</button>
+            </div>
+            <p id="error-text" style="color: #ffcc00; font-weight: bold; margin-top: 15px;"></p>
+        </section>
+    </div>
+
+    <div id="impact" class="page">
+        <h2>Global Impact & Philanthropy</h2>
+        <div class="impact-grid">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Elon_Musk_Royal_Society.jpg" class="musk-img" alt="Elon Musk">
+            <div>
+                <h3>The Mission Beyond Profit</h3>
+                <p>Tesla, led by Elon Musk, is committed to more than just high-tech freight. Through the <strong>Musk Foundation</strong>, the company has donated billions toward renewable energy research and pediatric healthcare.</p>
+                <p>In late 2024 and early 2025, Elon Musk donated over <strong>$112 million</strong> in Tesla shares to global charities. Our logistics network is part of this mission, providing free transport for disaster relief efforts worldwide.</p>
+                <ul style="list-style-type: square;">
+                    <li>Zero-Emission heavy transport</li>
+                    <li>Starlink-enabled remote tracking</li>
+                    <li>$5.7 Billion donated to global sustainability</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="testimonials" class="page">
+        <h2 style="text-align: center;">Partner Testimonials</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px;">
+            <div style="background:#f9f9f9; padding:25px; border-radius:8px;">
+                <p>"The efficiency of Tesla's autonomous network reduced our costs by 30%."</p>
+                <small>— <strong>Global Retail Corp</strong></small>
+            </div>
+            <div style="background:#f9f9f9; padding:25px; border-radius:8px;">
+                <p>"Unmatched security. We track every mile with full confidence."</p>
+                <small>— <strong>Defense Logistics Group</strong></small>
+            </div>
+            <div style="background:#f9f9f9; padding:25px; border-radius:8px;">
+                <p>"The only logistics partner that meets our 2030 carbon-zero goals."</p>
+                <small>— <strong>Green Supply Chain Inc.</strong></small>
+            </div>
+        </div>
+    </div>
+
+    <div id="tracking" class="page">
+        <div style="text-align: right; max-width: 800px; margin: 0 auto;">
+            <button class="print-btn" onclick="window.print()">🖨️ Print Official Receipt</button>
+        </div>
+        <div class="receipt-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:40px;">
+                <div>
+                    <h1 style="margin:0; letter-spacing:3px;">TESLA</h1>
+                    <p style="margin:0; font-size:0.8rem; color:#888;">Logistics & Supply Chain Division</p>
+                </div>
+                <div style="text-align:right;">
+                    <p><strong>Invoice #:</strong> <span id="res-inv"></span><br>
+                    <strong>Date:</strong> Jan 16, 2026</p>
+                </div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #eee;">
+            
+            <div style="margin:30px 0;">
+                <p><strong>Consignee:</strong> <span id="res-name"></span></p>
+                <p><strong>Tracking ID:</strong> <span id="res-id"></span></p>
+                <p><strong>Status:</strong> <span id="res-status" style="color:var(--tesla-red); font-weight:bold;"></span></p>
+            </div>
+
+            <div style="background:var(--tesla-silver); padding:20px; border-radius:4px;">
+                <h4 style="margin-top:0;">Shipment Progress</h4>
+                <div id="res-timeline"></div>
+            </div>
+
+            <div style="margin-top:40px; font-size:0.7rem; color:#aaa; text-align:center;">
+                <p>Authenticated by Tesla Global Node. Digital Signature Valid.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>TESLA LOGISTICS COMPANY &copy; 2026</p>
+        <p>This is an educational demo for <strong>Sebastius Washington</strong>. Images used for illustrative purposes.</p>
+    </footer>
+
+    <script>
+        const DATABASE = {
+            "TL-78901234": {
+                name: "Maria Velez Wampl",
+                status: "ARRIVED AT JFK AIRPORT - FINAL TRANSIT",
+                inv: "INV-TES-55901",
+                history: [
+                    { date: "Jan 15", msg: "Arrived at JFK Intl Airport", loc: "New York" },
+                    { date: "Jan 13", msg: "Departed Regional Hub", loc: "Denver, CO" },
+                    { date: "Jan 12", msg: "Shipment Picked Up", loc: "PUERTO RICO" }
+                ]
+            }
+        };
+
+        const ALERTS = [
+            { user: "Marcus V.", msg: "Tesla Received! (Model S)" },
+            { user: "Sarah L.", msg: "Cash Received via Tesla Secure." },
+            { user: "James Bond", msg: "Just placed a freight order." },
+            { user: "Elon M.", msg: "Impact donation completed." }
+        ];
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function handleSearch() {
+            const id = document.getElementById('track-input').value.trim();
+            const data = DATABASE[id];
+            if(data) {
+                document.getElementById('res-name').innerText = data.name;
+                document.getElementById('res-id').innerText = id;
+                document.getElementById('res-inv').innerText = data.inv;
+                document.getElementById('res-status').innerText = data.status;
+                document.getElementById('res-timeline').innerHTML = data.history.map(h => `
+                    <div style="margin-bottom:10px;">• <strong>${h.msg}</strong> (${h.loc}) - ${h.date}</div>
+                `).join('');
+                showPage('tracking');
+            } else {
+                document.getElementById('error-text').innerText = "ID NOT FOUND. VERIFY AND RETRY.";
+            }
+        }
+
+        // --- LIVE NOTIFICATION SYSTEM (30 SECONDS) ---
+        let alertIdx = 0;
+        function cycleAlerts() {
+            const toast = document.getElementById('notification');
+            document.getElementById('notif-user').innerText = ALERTS[alertIdx].user;
+            document.getElementById('notif-msg').innerText = ALERTS[alertIdx].msg;
+            
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 6000);
+            
+            alertIdx = (alertIdx + 1) % ALERTS.length;
+        }
+        setInterval(cycleAlerts, 30000);
+        setTimeout(cycleAlerts, 3000); // First one after 3 seconds
+    </script>
+</body>
+</html>
