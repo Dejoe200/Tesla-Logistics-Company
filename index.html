@@ -157,10 +157,18 @@
                     <h2 style="margin:0;">Verified Manifest</h2>
                     <span style="color:#00ff00; font-size:0.7rem; font-weight:bold;">● SATELLITE LINK ACTIVE</span>
                 </div>
-                
+
                 <div style="background: rgba(204,0,0,0.1); border: 1px dashed var(--tesla-red); padding: 30px; border-radius: 12px; margin: 30px 0; text-align: center;">
                     <p style="margin:0; font-size:0.7rem; color:#888; text-transform:uppercase;">Asset Value (USD)</p>
                     <h1 style="margin:5px 0; font-size:3rem; letter-spacing:1px;">$700,000.00</h1>
+                    <p style="margin:15px 0 0; font-size:1.1rem; color:#ff4444; font-weight:bold;">
+                        IN TRANSIT – AIRCRAFT LANDED<br>
+                        Current Location: Nassau, Bahamas (NAS)
+                    </p>
+                    <p style="margin:8px 0 0; font-size:0.9rem; color:#888;">
+                        Reason for Stop: Fuel optimization and route adjustment due to operational requirements.<br>
+                        (Last position update: >5 hours ago)
+                    </p>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:30px;">
@@ -171,8 +179,8 @@
                     </div>
                     <div>
                         <small style="color:#555">ROUTE</small><br>
-                        <strong>AUS (Austin) ➔ SJU (San Juan)</strong><br>
-                        <small>Autonomous Flight Path B-202</small>
+                        <strong>AUS (Austin) ➔ NAS (Nassau) ➔ SJU (San Juan)</strong><br>
+                        <small>Autonomous Flight Path B-202 (current segment: NAS hold)</small>
                     </div>
                 </div>
                 
@@ -228,16 +236,21 @@
         let map = null;
         function initMap() {
             if(map) map.remove();
-            map = L.map('map', {zoomControl: false}).setView([25, -82], 4);
+            map = L.map('map', {zoomControl: false}).setView([23, -78], 5);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
-            const Austin = [30.1975, -97.6664];
-            const Carolina = [18.4394, -66.0018];
-            const line = L.polyline([Austin, Carolina], {color: '#cc0000', weight: 2, dashArray: '10,10'}).addTo(map);
-            L.circleMarker(Austin, {radius: 5, color: '#cc0000', fillOpacity: 1}).addTo(map);
-            L.circleMarker(Carolina, {radius: 5, color: '#fff', fillOpacity: 1}).addTo(map);
-            map.fitBounds(line.getBounds(), {padding: [50, 50]});
+
+            const Austin    = [30.1975, -97.6664];
+            const Nassau    = [25.0386, -77.4661];
+            const Carolina  = [18.4394, -66.0018];
+
+            const line = L.polyline([Austin, Nassau, Carolina], {color: '#cc0000', weight: 2, dashArray: '10,10'}).addTo(map);
+            
+            L.circleMarker(Austin,    {radius: 5, color: '#cc0000', fillOpacity: 1}).addTo(map).bindTooltip("Origin: AUS");
+            L.circleMarker(Nassau,    {radius: 6, color: '#ff8800', fillOpacity: 1}).addTo(map).bindTooltip("Current: NAS (landed)");
+            L.circleMarker(Carolina,  {radius: 5, color: '#fff',     fillOpacity: 1}).addTo(map).bindTooltip("Destination: SJU");
+
+            map.fitBounds(line.getBounds(), {padding: [60, 60]});
         }
     </script>
 </body>
 </html>
- 
