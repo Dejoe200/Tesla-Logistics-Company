@@ -3,210 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tesla Logistics | Autonomous Global Supply</title>
+    <title>Tesla Logistics | Autonomous Supply Chain</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <style>
-        :root { 
-            --tesla-red: #cc0000; 
-            --tesla-dark: #171a20; 
-            --tesla-silver: #f4f4f4; 
-            --text-main: #393c41; 
-        }
-
-        /* General Styling */
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; color: var(--text-main); line-height: 1.6; background: #fff; }
+        :root { --tesla-red: #cc0000; --tesla-dark: #171a20; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; color: #393c41; }
         
-        /* Navigation */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
-        .logo { font-weight: 700; letter-spacing: 4px; font-size: 1.2rem; color: var(--tesla-dark); text-decoration: none; cursor: pointer; }
-        .nav-links a { margin-left: 20px; text-decoration: none; color: var(--text-main); font-weight: 600; cursor: pointer; font-size: 0.9rem; }
+        nav { display: flex; flex-direction: column; align-items: center; padding: 15px; background: white; border-bottom: 1px solid #eee; }
+        .logo { font-weight: 700; letter-spacing: 3px; color: var(--tesla-dark); text-decoration: none; }
+        
+        .page { display: none; padding: 20px; box-sizing: border-box; }
+        .active { display: block; }
 
-        /* Page Management */
-        .page { display: none; padding: 40px 5%; min-height: 80vh; box-sizing: border-box; }
-        .active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hero { background: #111; color: white; padding: 50px 20px; text-align: center; border-radius: 0 0 20px 20px; }
+        .search-box { background: white; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; margin-top: 20px; }
+        .search-box input { border: none; padding: 15px; font-size: 1rem; outline: none; }
+        .search-box button { background: var(--tesla-red); color: white; border: none; padding: 15px; font-weight: bold; }
 
-        /* Hero Section */
-        .hero {
-            height: 60vh; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-            url('https://images.unsplash.com/photo-1591768793355-74d7c813ec44?auto=format&fit=crop&w=1600&q=80');
-            background-size: cover; background-position: center;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;
-            padding: 20px;
-        }
-        .hero h1 { font-size: clamp(2rem, 8vw, 4rem); margin: 0; }
-        .search-box { background: white; padding: 5px; border-radius: 4px; display: flex; width: 100%; max-width: 500px; margin-top: 25px; }
-        .search-box input { border: none; padding: 15px; flex-grow: 1; outline: none; font-size: 1rem; width: 50%; }
-        .search-box button { background: var(--tesla-red); color: white; border: none; padding: 0 25px; font-weight: bold; cursor: pointer; }
+        .receipt { border: 1px solid #ddd; padding: 20px; border-radius: 12px; background: white; }
+        #map { height: 250px; width: 100%; border-radius: 8px; margin-bottom: 15px; background: #eee; }
 
-        /* Map Styling */
-        #map { 
-            height: 350px; width: 100%; border-radius: 8px; margin-bottom: 25px; 
-            filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3); /* Tesla Dark Mode */
-        }
-
-        /* Impact Section */
-        .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
-        .musk-img { width: 100%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-
-        /* Tracking Card */
-        .receipt-card { border: 1px solid #eee; padding: 30px; border-radius: 8px; max-width: 800px; margin: 0 auto; background: white; }
-        .status-badge { background: var(--tesla-red); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; }
-
-        /* Mobile Fixes */
-        @media (max-width: 768px) {
-            nav { flex-direction: column; gap: 10px; }
-            .nav-links a { margin: 0 10px; font-size: 0.8rem; }
-            .impact-grid { grid-template-columns: 1fr; }
-            .hero h1 { font-size: 2.2rem; }
-            .search-box { flex-direction: column; }
-            .search-box button { padding: 15px; }
-        }
-
-        footer { background: var(--tesla-dark); color: #777; padding: 40px 5%; text-align: center; font-size: 0.8rem; margin-top: 50px; }
+        #email-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center; }
+        .modal-box { background: white; padding: 25px; border-radius: 15px; width: 85%; max-width: 400px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <nav>
-        <div class="logo" onclick="showPage('home')">TESLA</div>
-        <div class="nav-links">
-            <a onclick="showPage('home')">HOME</a>
-            <a onclick="showPage('impact')">IMPACT</a>
-            <a onclick="showPage('tracking-view')" id="nav-track" style="display:none;">MY SHIPMENT</a>
+    <nav><div class="logo">TESLA LOGISTICS</div></nav>
+
+    <div id="email-modal">
+        <div class="modal-box">
+            <h3>Digital Receipt</h3>
+            <p style="font-size:0.9rem; color:#666;">Enter your details to receive the official manifest via email.</p>
+            
+            <form action="https://submit.jotform.com/submit/260152403302035/" method="POST" onsubmit="return handleFormSubmit()">
+                <input type="text" name="q3_name" placeholder="Full Name" required style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
+                <input type="email" name="q4_email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;">
+                <input type="hidden" name="q5_trackingId" id="hidden-id">
+                
+                <button type="submit" style="width:100%; background:black; color:white; padding:12px; border-radius:5px; border:none; font-weight:bold;">SEND & VIEW TRACKING</button>
+            </form>
+            <p onclick="closeModal()" style="margin-top:15px; color:#888; font-size:0.8rem;">Cancel</p>
         </div>
-    </nav>
+    </div>
 
     <div id="home" class="page active">
-        <section class="hero">
-            <h1>Secure Logistics.</h1>
-            <p>Global asset monitoring powered by the Tesla Autonomous Network.</p>
+        <div class="hero">
+            <h1 style="margin:0;">Secure Tracking</h1>
+            <p style="font-size:0.9rem; color:#aaa;">Global Autonomous Network</p>
             <div class="search-box">
-                <input type="text" id="track-input" placeholder="Enter ID (TL-78901234)">
-                <button onclick="handleSearch()">TRACK</button>
+                <input type="text" id="track-id" placeholder="TL-78901234">
+                <button onclick="checkID()">TRACK ASSET</button>
             </div>
-            <p id="error-text" style="color: #ffcc00; font-weight: bold; margin-top: 15px;"></p>
-        </section>
-    </div>
-
-    <div id="impact" class="page">
-        <h2>Global Impact & Philanthropy</h2>
-        <div class="impact-grid">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/ed/Elon_Musk_Royal_Society.jpg" class="musk-img" alt="Elon Musk">
-            <div>
-                <h3>The Mission Beyond Profit</h3>
-                <p>Tesla, led by Elon Musk, is committed to more than just high-tech freight. Through the <strong>Musk Foundation</strong>, the company has donated billions toward renewable energy research and healthcare.</p>
-                <p>Our logistics network provides free transport for disaster relief efforts. Recently, Elon Musk donated over <strong>$112 million</strong> in shares to ensure global supply chains remain sustainable.</p>
-                <ul style="list-style-type: square; font-size: 0.9rem;">
-                    <li>Zero-Emission heavy transport</li>
-                    <li>Starlink-enabled remote tracking</li>
-                    <li>$5.7 Billion donated to global sustainability</li>
-                </ul>
-            </div>
+            <p id="err" style="color:#ffcc00; margin-top:10px; font-size:0.8rem;"></p>
         </div>
     </div>
 
-    <div id="tracking-view" class="page">
-        <div class="receipt-card">
+    <div id="tracking" class="page">
+        <div class="receipt">
             <div id="map"></div>
-            
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
-                <div>
-                    <h2 style="margin:0;">Shipment Details</h2>
-                    <p style="color:#888; margin:0;">ID: <span id="res-id"></span></p>
-                </div>
-                <span class="status-badge" id="res-status"></span>
-            </div>
-
-            <div style="background:#f9f9f9; padding:20px; border-radius:6px; margin-bottom:20px;">
-                <p><strong>Consignee:</strong> <span id="res-name"></span></p>
-                <p><strong>Invoice:</strong> <span id="res-inv"></span></p>
-            </div>
-
-            <h4>Tracking Timeline</h4>
-            <div id="res-timeline" style="border-left: 2px solid #eee; padding-left: 20px;"></div>
-            
-            <button onclick="window.print()" style="margin-top:30px; background:#444; color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; width:100%;">🖨️ Print Official Manifest</button>
+            <h2 style="margin:0; color:var(--tesla-red);">IN TRANSIT</h2>
+            <p id="res-name" style="margin:5px 0; font-weight:bold;"></p>
+            <p style="font-size:0.8rem; color:#888;">Authenticated via Tesla Global Node</p>
+            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+            <div id="timeline" style="font-size:0.85rem; line-height:2;"></div>
+            <button onclick="location.reload()" style="width:100%; margin-top:20px; padding:12px; border:none; background:#f4f4f4; border-radius:8px;">New Search</button>
         </div>
     </div>
-
-    <footer>
-        <p>TESLA LOGISTICS COMPANY &copy; 2026 | SUSTAINABLE FREIGHT SOLUTIONS</p>
-    </footer>
 
     <script>
-        const DATABASE = {
+        const DB = {
             "TL-78901234": {
                 name: "Maria Velez Wampl",
-                status: "IN TRANSIT - JFK AIRPORT",
-                inv: "INV-TES-55901",
-                history: [
-                    { date: "Jan 15", msg: "Arrived at JFK Intl Airport", loc: "New York, USA" },
-                    { date: "Jan 13", msg: "Departed Regional Hub", loc: "Denver, CO" },
-                    { date: "Jan 12", msg: "Shipment Picked Up", loc: "PUERTO RICO HUB" }
-                ]
+                hist: ["Jan 15: Arrived JFK Intl (NY)", "Jan 13: Departed Denver Hub", "Jan 12: Picked up Puerto Rico Hub"]
             }
         };
 
-        let map; // Global map variable
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
-        }
-
-        function handleSearch() {
-            const id = document.getElementById('track-input').value.trim();
-            const data = DATABASE[id];
-            
-            if(data) {
-                document.getElementById('res-name').innerText = data.name;
-                document.getElementById('res-id').innerText = id;
-                document.getElementById('res-inv').innerText = data.inv;
-                document.getElementById('res-status').innerText = data.status;
-                document.getElementById('res-timeline').innerHTML = data.history.map(h => `
-                    <div style="margin-bottom:15px; position:relative;">
-                        <div style="font-weight:bold; font-size:0.9rem;">${h.msg}</div>
-                        <div style="font-size:0.8rem; color:#666;">${h.loc} — ${h.date}</div>
-                    </div>
-                `).join('');
-                
-                document.getElementById('nav-track').style.display = "inline";
-                showPage('tracking-view');
-                initMap(); // Start the map
+        function checkID() {
+            const id = document.getElementById('track-id').value.trim();
+            if(DB[id]) {
+                document.getElementById('hidden-id').value = id;
+                document.getElementById('email-modal').style.display='flex';
             } else {
-                document.getElementById('error-text').innerText = "TRACKING ID NOT RECOGNIZED.";
+                document.getElementById('err').innerText = "ID Not Found";
             }
         }
 
-        function initMap() {
-            // Destroy old map if user searches again
-            if (map) { map.remove(); }
+        function closeModal() { document.getElementById('email-modal').style.display='none'; }
 
-            // Center between USA and Puerto Rico
-            map = L.map('map').setView([30.0, -70.0], 4);
+        function handleFormSubmit() {
+            const id = document.getElementById('track-id').value;
+            // Delay showing the map slightly so the form has time to fire
+            setTimeout(() => { renderTracking(id); }, 500);
+            return true; 
+        }
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© Tesla Navigation'
-            }).addTo(map);
+        function renderTracking(id) {
+            closeModal();
+            const data = DB[id];
+            document.getElementById('res-name').innerText = "Consignee: " + data.name;
+            document.getElementById('timeline').innerHTML = data.hist.map(h => "• " + h + "<br>").join('');
+            
+            document.getElementById('home').classList.remove('active');
+            document.getElementById('tracking').classList.add('active');
 
-            const US_Hub = [40.7128, -74.0060]; // NYC
-            const PR_Hub = [18.4655, -66.1057]; // San Juan
-
-            const path = L.polyline([US_Hub, PR_Hub], {
-                color: '#cc0000', 
-                weight: 3, 
-                dashArray: '8, 8'
-            }).addTo(map);
-
-            L.marker(US_Hub).addTo(map).bindPopup("US Transit Hub (JFK)");
-            L.marker(PR_Hub).addTo(map).bindPopup("Final Destination (Puerto Rico)");
-
-            map.fitBounds(path.getBounds(), {padding: [50, 50]});
+            // Lightweight Mobile Map
+            const m = L.map('map', {zoomControl: false}).setView([30, -70], 4);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);
+            L.polyline([[40,-74], [18,-66]], {color:'red', weight:2, dashArray:'5,5'}).addTo(m);
+            L.circleMarker([40,-74], {radius: 5, color: 'red'}).addTo(m);
+            L.circleMarker([18,-66], {radius: 5, color: 'black'}).addTo(m);
         }
     </script>
 </body>
