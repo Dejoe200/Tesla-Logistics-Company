@@ -58,6 +58,31 @@
         }
 
         footer { background: var(--tesla-dark); color: #777; padding: 60px 8%; text-align: center; font-size: 0.8rem; margin-top: 50px; }
+        /* --- MOBILE FIXES --- */
+@media (max-width: 768px) {
+    /* Shrink the huge hero text */
+    .hero h1 { font-size: 2.2rem !important; padding: 0 10px; }
+    
+    /* Stack the nav links vertically so they don't overlap */
+    nav { flex-direction: column; text-align: center; gap: 10px; }
+    .nav-links a { margin: 0 10px; font-size: 0.9rem; }
+
+    /* Make the Impact grid stack 1 column instead of 2 */
+    .impact-grid { grid-template-columns: 1fr; gap: 20px; }
+    
+    /* Stack the Testimonials into 1 column */
+    #testimonials div[style*="grid-template-columns"] { 
+        grid-template-columns: 1fr !important; 
+    }
+
+    /* Make the search box fit the screen */
+    .search-box { flex-direction: column; width: 100%; }
+    .search-box button { padding: 15px; border-radius: 0 0 4px 4px; }
+    
+    /* Adjust receipt padding for small screens */
+    .receipt-card { padding: 20px; }
+}
+
     </style>
 </head>
 <body>
